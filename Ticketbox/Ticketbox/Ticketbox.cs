@@ -1,19 +1,15 @@
 ﻿using DSharpPlus;
 using DSharpPlus.SlashCommands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Ticketbox.Commands;
 using Ticketbox.Config;
-using Ticketbox.Models;
+using EventHandler = Ticketbox.Models.EventHandler;
 
 namespace Ticketbox.Ticketbox
 {
     internal class Ticketbox
     {
         public static DiscordClient Client { get; private set; }
-        public SlashCommandsExtension Extension { get; private set; }
+        public SlashCommandsExtension SlashCommands { get; private set; }
 
         public async Task RunBotAsync()
         {
@@ -28,16 +24,14 @@ namespace Ticketbox.Ticketbox
                 AutoReconnect = true
             });
 
-            Client.Ready += Client_Ready;
+            SlashCommands = Client.UseSlashCommands();
+            SlashCommands.RegisterCommands<CreatePanelCommand>();
+
+            Client.Ready += EventHandler.OnReady;
+            Client.ComponentInteractionCreated += EventHandler.OnComponentInteractionCreated;
 
             await Client.ConnectAsync();
             await Task.Delay(-1);
-        }
-
-        private Task Client_Ready(DiscordClient sender, DSharpPlus.EventArgs.ReadyEventArgs args)
-        {
-            Logger.Info("Client is ready!");
-            return Task.CompletedTask;
         }
     }
 }

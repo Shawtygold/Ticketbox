@@ -1,17 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Ticketbox.Ticketbox;
 
 namespace Ticketbox.Models
 {
     internal class Logger
     {
-
         public static void Debug(string message)
         {
             try
