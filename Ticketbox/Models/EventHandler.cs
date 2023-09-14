@@ -1,9 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using System.Diagnostics.Metrics;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using Ticketbox.Db;
 
 namespace Ticketbox.Models
@@ -168,7 +165,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket, manage roles or manage channels! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to manage roles or manage channels! Please check the permissions.");
             }
             catch (Exception ex)
             {
@@ -203,7 +200,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket or send messages! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to send messages! Please check the permissions.");
             }
             catch (NotFoundException)
             {
@@ -242,7 +239,7 @@ namespace Ticketbox.Models
                     }
                     catch (UnauthorizedException)
                     {
-                        return (false, "Maybe I'm not allowed to access the ticket, manage roles or manage channels! Please check the permissions.");
+                        return (false, "Maybe I'm not allowed to manage roles or manage channels! Please check the permissions.");
                     }
                     catch (NotFoundException)
                     {
@@ -262,7 +259,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {              
-                return (false, "Maybe I'm not allowed to access the ticket, manage roles or manage channels! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to manage roles or manage channels! Please check the permissions.");
             }
             catch (NotFoundException)
             {
@@ -300,7 +297,7 @@ namespace Ticketbox.Models
                 }
                 catch (UnauthorizedException)
                 {
-                    return (false, "Maybe I'm not allowed to access the logs channel or send messages! Please check the permissions.");
+                    return (false, "Maybe I'm not allowed to send messages! Please check the permissions.");
                 }
                 catch (NotFoundException)
                 {
@@ -337,7 +334,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket or manage channels! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to manage channels! Please check the permissions.");
             }
             catch (Exception ex)
             {
@@ -354,7 +351,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket or send messages! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to send messages! Please check the permissions.");
             }
             catch (NotFoundException)
             {
@@ -372,7 +369,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket, manage roles or manage channels! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to manage roles or manage channels! Please check the permissions.");
             }
             catch (NotFoundException)
             {
@@ -402,7 +399,7 @@ namespace Ticketbox.Models
                 }
                 catch (UnauthorizedException)
                 {
-                    return (false, "Maybe I'm not allowed to access the ticket or manage channels! Please check the permissions.");
+                    return (false, "Maybe I'm not allowed to manage channels! Please check the permissions.");
                 }
                 catch (Exception ex)
                 {
@@ -443,7 +440,7 @@ namespace Ticketbox.Models
                 }
                 catch (UnauthorizedException)
                 {
-                    return (false, "Maybe I'm not allowed to access the logs channel or send messages! Please check the permissions.");
+                    return (false, "Maybe I'm not allowed to send messages! Please check the permissions.");
                 }
                 catch (NotFoundException)
                 {
@@ -486,7 +483,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket or manage messages! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to manage messages! Please check the permissions.");
             }
             catch (NotFoundException)
             {
@@ -506,7 +503,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket or manage channels! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to manage channels! Please check the permissions.");
             }
             catch (Exception ex)
             {
@@ -532,7 +529,7 @@ namespace Ticketbox.Models
                 }
                 catch (UnauthorizedException)
                 {
-                    return (false, "Maybe I'm not allowed to access the ticket or manage channels! Please check the permissions.");
+                    return (false, "Maybe I'm not allowed to manage channels! Please check the permissions.");
                 }
                 catch (Exception ex)
                 {
@@ -557,7 +554,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket or send messages! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to send messages! Please check the permissions.");
             }
             catch (NotFoundException)
             {
@@ -574,7 +571,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket, manage roles or manage channels! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to manage roles or manage channels! Please check the permissions.");
             }
             catch (NotFoundException)
             {
@@ -609,7 +606,7 @@ namespace Ticketbox.Models
                 }
                 catch (UnauthorizedException)
                 {
-                    return (false, "Maybe I'm not allowed to access the logs channel or send messages! Please check the permissions.");
+                    return (false, "Maybe I'm not allowed to send messages! Please check the permissions.");
                 }
                 catch (NotFoundException)
                 {
@@ -653,7 +650,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket or manage channels! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to manage channels! Please check the permissions.");
             }
             catch (NotFoundException)
             {
@@ -688,7 +685,7 @@ namespace Ticketbox.Models
                 }
                 catch (UnauthorizedException)
                 {
-                    return (false, "Maybe I'm not allowed to access the logs channel or send messages! Please check the permissions.");
+                    return (false, "Maybe I'm not allowed to send messages! Please check the permissions.");
                 }
                 catch (NotFoundException)
                 {
@@ -724,7 +721,7 @@ namespace Ticketbox.Models
             }
             catch (UnauthorizedException)
             {
-                return (false, "Maybe I'm not allowed to access the ticket or send messages! Please check the permissions.");
+                return (false, "Maybe I'm not allowed to send messages! Please check the permissions.");
             }
             catch (NotFoundException)
             {
