@@ -43,13 +43,13 @@ namespace Ticketbox.Commands
             {
                 bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
             }
-            catch (ServerErrorException)
+            catch
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
                     Title = "An error occurred.",
                     Color = DiscordColor.Red,
-                    Description = "Server Error Exception. Please try again or contact the developer."
+                    Description = "Could not find itself on the server. Please try again or contact the developer."
                 }));
                 return;
             }
@@ -162,49 +162,6 @@ namespace Ticketbox.Commands
                 }));
                 return;
             }
-
-            #region Log
-            //// Log
-            //if(logChannel != null)
-            //{
-            //    try
-            //    {
-            //        await logChannel.SendMessageAsync(new DiscordEmbedBuilder()
-            //        {
-            //            Title = "Complete.",
-            //            Color = DiscordColor.Green,
-            //            Description = $"Panel **{panelTitle}** was successfully created and sent to the {panelChannel.Mention}!"
-            //        });
-            //    }
-            //    catch (UnauthorizedException)
-            //    {
-            //        await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(new DiscordEmbedBuilder()
-            //        {
-            //            Title = "Insufficient permissions.",
-            //            Color = DiscordColor.Red,
-            //            Description = "Maybe I'm not allowed to access the logs channel or send messages! Please, check the permissions."
-            //        }));
-            //    }
-            //    catch (NotFoundException)
-            //    {
-            //        await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(new DiscordEmbedBuilder()
-            //        {
-            //            Title = "An error occurred.",
-            //            Color = DiscordColor.Red,
-            //            Description = "Something went wrong when trying to send message to the Log channel. Discord channel not found!"
-            //        }));
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(new DiscordEmbedBuilder()
-            //        {
-            //            Title = "An error occurred.",
-            //            Color = DiscordColor.Red,
-            //            Description = $"Something went wrong when trying to send message to the Log channel.\n\nThis was Discord's response:\n> {ex.Message}\n. Please try again or contact the developer."
-            //        }));
-            //    }
-            //}
-            #endregion
 
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
             {

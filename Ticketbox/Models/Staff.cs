@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Ticketbox.Models
+﻿namespace Ticketbox.Models
 {
     internal class Staff
     {

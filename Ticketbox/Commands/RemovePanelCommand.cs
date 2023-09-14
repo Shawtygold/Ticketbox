@@ -1,8 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 using DSharpPlus.SlashCommands;
-using System.Diagnostics.Metrics;
 using Ticketbox.Db;
 using Ticketbox.Models;
 
@@ -34,13 +32,13 @@ namespace Ticketbox.Commands
             {
                 bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
             }
-            catch (ServerErrorException)
+            catch 
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
                     Title = "An error occurred.",
                     Color = DiscordColor.Red,
-                    Description = "Server Error Exception. Please try again or contact the developer."
+                    Description = "Could not find itself on the server. Please try again or contact the developer."
                 }));
                 return;
             }
@@ -49,7 +47,7 @@ namespace Ticketbox.Commands
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
-                    Title = "Insufficient permissions.",
+                    Title = "An error occurred.",
                     Color = DiscordColor.Red,
                     Description = "I don't have access to this channel! Please check the permissions."
                 }));
@@ -60,7 +58,7 @@ namespace Ticketbox.Commands
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
-                    Title = "Insufficient permissions.",
+                    Title = "An error occurred.",
                     Color = DiscordColor.Red,
                     Description = "Maybe I'm not allowed to send messages. Please check the permissions."
                 }));
