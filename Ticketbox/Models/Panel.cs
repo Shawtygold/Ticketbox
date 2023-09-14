@@ -8,8 +8,9 @@
         public ulong ChannelId { get; set; }
         public string ButtonMessage { get; set; } = null!;
         public string ButtonColor { get; set; } = null!;
-        public ulong TicketCategoryId { get; set; }
+        public ulong OpenTicketCategoryId { get; set; }
+        public ulong? CloseTicketCategoryId { get; set; }
         public ulong? LogChannelId { get; set; }
-        public ulong? TranscriptChannelId { get; set; }
+        public long TicketCount { get; set; }
     }
 }

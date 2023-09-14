@@ -1,4 +1,5 @@
 ﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Ticketbox.Commands;
 using Ticketbox.Config;
@@ -26,6 +27,9 @@ namespace Ticketbox.Ticketbox
 
             SlashCommands = Client.UseSlashCommands();
             SlashCommands.RegisterCommands<CreatePanelCommand>();
+            SlashCommands.RegisterCommands<RemovePanelCommand>();
+            SlashCommands.RegisterCommands<AddStaffCommand>();
+            SlashCommands.RegisterCommands<RemoveStaffCommand>();
 
             Client.Ready += EventHandler.OnReady;
             Client.ComponentInteractionCreated += EventHandler.OnComponentInteractionCreated;

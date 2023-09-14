@@ -9,18 +9,13 @@ namespace Ticketbox.Commands
 {
     internal class CreatePanelCommand : ApplicationCommandModule
     {
-        [SlashCommand("send_panel", "Sends a panel for interaction to be able to create a ticket.")]
+        [SlashCommand("create_panel", "Creates and sends an interaction panel to be able to create a ticket.")]
         public static async Task OnExecute(InteractionContext ctx, 
             [Option("title","Panel Title")][MaximumLength(50)] string panelTitle,
             [Option("channel", "Discord channel where the panel will be sent to.")] DiscordChannel panelChannel,
-            [Option("tickets_support_role", "Role that, by default, will have access to tickets")] DiscordRole supportRole,
-            [Option("open_tickets_category", "Discord category where tickets will be located.")] DiscordChannel ticketsCategory,
+            [Option("open_tickets_category", "The Discord category in which the open tickets will be located.")] DiscordChannel openTicketsCategory,
+            [Option("close_tickets_category", "The Discord category where the closed tickets will be located.")] DiscordChannel? closeTicketsCategory = null,
             [Option("log_channel", "Discord channel where logs will be sent.")] DiscordChannel? logChannel = null,
-            [Option("transcript_channel", "Discord channel where the transcripts will be sent.")] DiscordChannel? transcriptChannel = null,
-            [Option("tickets_support_role2", "Role that, by default, will have access to tickets")] DiscordRole? supportRole2 = null,
-            [Option("tickets_support_role3", "Role that, by default, will have access to tickets")] DiscordRole? supportRole3 = null,
-            [Option("tickets_support_role4", "Role that, by default, will have access to tickets")] DiscordRole? supportRole4 = null,
-            [Option("tickets_support_role5", "Role that, by default, will have access to tickets")] DiscordRole? supportRole5 = null,
             [Option("message", "The message that will be located inside the panel.")][MaximumLength(50)] string? panelDescription = null,
             [Option("button_message", "The inscription on the panel button.")][MaximumLength(30)] string? panelButtonMessage = null,
             [Option("button_emomji", "The emomji located on the panel button.")] DiscordEmoji? panelButtonEmmoji = null,
@@ -34,8 +29,9 @@ namespace Ticketbox.Commands
             {
                 await ctx.CreateResponseAsync(new DiscordEmbedBuilder()
                 {
+                    Title = "Insufficient permissions.",
                     Color = DiscordColor.Red,
-                    Description = "Insufficient permissions. You need **Administrator** permission for this command."
+                    Description = "You need **Administrator** permission for this command."
                 }, true);
                 return;
             }
@@ -51,8 +47,9 @@ namespace Ticketbox.Commands
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
+                    Title = "An error occurred.",
                     Color = DiscordColor.Red,
-                    Description = "Server Error Exception. Please, try again or contact the developer."
+                    Description = "Server Error Exception. Please try again or contact the developer."
                 }));
                 return;
             }
@@ -61,8 +58,9 @@ namespace Ticketbox.Commands
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
+                    Title = "An error occurred.",
                     Color = DiscordColor.Red,
-                    Description = "I don't have access to this channel! Please, check the permissions."
+                    Description = "I don't have access to this channel! Please check the permissions."
                 }));
                 return;
             }
@@ -71,6 +69,7 @@ namespace Ticketbox.Commands
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
+                    Title = "An error occurred.",
                     Color = DiscordColor.Red,
                     Description = "Maybe I'm not allowed to send messages, embed links, attach files, manage roles or manage channels. Please check the permissions."
                 }));
@@ -80,14 +79,6 @@ namespace Ticketbox.Commands
             DiscordEmoji defaultButtonEmoji = DiscordEmoji.FromName(ctx.Client, ":envelope_with_arrow:");
             panelButtonEmmoji ??= defaultButtonEmoji;
             panelDescription ??= "To create a ticket react with" + defaultButtonEmoji;
-
-            DiscordEmbedBuilder embed = new()
-            {
-                Title = panelTitle,
-                Color = DiscordColor.Blurple,
-                Description = panelDescription,
-                Footer = new() { Text = "Ticketbox", IconUrl = ctx.Client.CurrentUser.AvatarUrl }
-            };
 
             panelButtonColor ??= "Primary";
             ButtonStyle buttonStyle = new();
@@ -101,80 +92,35 @@ namespace Ticketbox.Commands
 
             panelButtonMessage ??= panelButtonEmmoji + "Create ticket";
 
+            ulong? closeTicketsCategoryId = null;
+            if (closeTicketsCategory != null)
+                closeTicketsCategoryId = closeTicketsCategory.Id;
+
             ulong? logChannelId = null;
             if(logChannel != null)
                 logChannelId = logChannel.Id;
 
-            ulong? transcriptChannelId = null;
-            if(transcriptChannel != null) 
-                transcriptChannelId = transcriptChannel.Id;
-
             // Adding a panel to the database
-            Panel panel = new() { Title = panelTitle, Description= panelDescription, ChannelId= panelChannel.Id,  ButtonMessage =panelButtonMessage, ButtonColor= panelButtonColor,  TicketCategoryId = ticketsCategory.Id, LogChannelId = logChannelId,  TranscriptChannelId =transcriptChannelId };
+            Panel panel = new() { Title = panelTitle, Description = panelDescription, ChannelId = panelChannel.Id, ButtonMessage = panelButtonMessage, ButtonColor = panelButtonColor, OpenTicketCategoryId = openTicketsCategory.Id, CloseTicketCategoryId = closeTicketsCategoryId, LogChannelId = logChannelId };
             (bool result, long panelId) = await Database.AddPanelAsync(panel);
             if (!result)
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
-                    Color = DiscordColor.Red,
                     Title = "An error occurred.",
-                    Description = "Something went wrong. The panel was not added. Please try again or contact the developer."
-                }));
-            }
-
-            // Getting support roles
-            List<DiscordRole?> supportRoles = new() { supportRole, supportRole2, supportRole3, supportRole4, supportRole5 };
-            List<DiscordRole> supportRolesNotNull = new();
-            for (int i = 0; i < supportRoles.Count; i++)
-            {
-                if (supportRoles[i] != null)
-                {
-                    supportRolesNotNull.Add(supportRoles[i]);
-                }
-            }
-
-            // Get all members
-            IReadOnlyCollection<DiscordMember> allMembers;
-            try
-            {
-                allMembers = await ctx.Guild.GetAllMembersAsync();
-            }
-            catch (ServerErrorException)
-            {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
-                {
                     Color = DiscordColor.Red,
-                    Description = "Server Error Exception. Please, try again or contact the developer."
+                    Description = "The panel was not added. Please try again or contact the developer."
                 }));
                 return;
             }
 
-            // Get staffs
-            List<DiscordMember> staffs = new();
-
-            foreach (var member in allMembers)
+            DiscordEmbedBuilder embed = new()
             {
-                for (int j = 0; j < supportRolesNotNull.Count; j++)
-                {
-                    if (member.Roles.Any(r => r.Id == supportRolesNotNull[j].Id))
-                        staffs.Add(member);
-                }
-            }
-
-            // Adding staffs to the database
-            for (int i = 0; i < staffs.Count; i++)
-            {
-                if (!await Database.AddStaff(new Staff() { MemberId = staffs[i].Id, Name = staffs[i].DisplayName, GuildId = ctx.Guild.Id }))
-                {
-                    await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
-                    {
-                        Color = DiscordColor.Red,
-                        Title = "An error occurred.",
-                        Description = "Something went wrong. The staff was not added. Please try again or contact the developer."
-                    }));
-                    return;
-                }
-            }
+                Title = panelTitle,
+                Color = DiscordColor.Blurple,
+                Description = panelDescription,
+                Footer = new() { Text = $"Panel ID - {panelId}", IconUrl = ctx.Client.CurrentUser.AvatarUrl }
+            };
 
             // Panel message
             DiscordMessageBuilder message = new();
@@ -190,9 +136,9 @@ namespace Ticketbox.Commands
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
-                    Color = DiscordColor.Red,
                     Title = "An error occurred.",
-                    Description = "Hmm, something went wrong. Maybe I'm not allowed to access the channel, send messages, embed links, attach files, manage roles or manage channels! Please, check the permissions."
+                    Color = DiscordColor.Red,
+                    Description = "Maybe I'm not allowed to access the channel, send messages, embed links or attach files! Please check the permissions."
                 }));
                 return;
             }
@@ -200,9 +146,9 @@ namespace Ticketbox.Commands
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
-                    Color = DiscordColor.Red,
                     Title = "An error occurred.",
-                    Description = "Hmm, something went wrong when trying to send a panel to the Discord channel. Discord channel not found!"
+                    Color = DiscordColor.Red,
+                    Description = "Something went wrong when trying to send a panel to the Discord channel. Discord channel not found!"
                 }));
                 return;
             }
@@ -210,29 +156,72 @@ namespace Ticketbox.Commands
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
                 {
-                    Color = DiscordColor.Red,
                     Title = "An error occurred.",
-                    Description = $"Hmm, something went wrong when trying to send a panel to the Discord channel.\n\nThis was Discord's response:\n> {ex.Message}\n\nIf you would like to contact the bot owner about this, please include the following debugging information in the message:\n```{ex}\n```"
+                    Color = DiscordColor.Red,
+                    Description = $"Something went wrong when trying to send a panel to the Discord channel.\n\nThis was Discord's response:\n```{ex.Message}```\nPlease try again or contact the developer."
                 }));
-                Logger.Error(ex.ToString());
                 return;
             }
 
-            // Log
-            if(logChannel != null)
-            {
-                await logChannel.SendMessageAsync(new DiscordEmbedBuilder()
-                {
-                    Color = DiscordColor.Green,
-                    Description = $"Panel **{panelTitle}** was successfully created and sent to the {panelChannel.Mention}!"
-                });
-            }
+            #region Log
+            //// Log
+            //if(logChannel != null)
+            //{
+            //    try
+            //    {
+            //        await logChannel.SendMessageAsync(new DiscordEmbedBuilder()
+            //        {
+            //            Title = "Complete.",
+            //            Color = DiscordColor.Green,
+            //            Description = $"Panel **{panelTitle}** was successfully created and sent to the {panelChannel.Mention}!"
+            //        });
+            //    }
+            //    catch (UnauthorizedException)
+            //    {
+            //        await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(new DiscordEmbedBuilder()
+            //        {
+            //            Title = "Insufficient permissions.",
+            //            Color = DiscordColor.Red,
+            //            Description = "Maybe I'm not allowed to access the logs channel or send messages! Please, check the permissions."
+            //        }));
+            //    }
+            //    catch (NotFoundException)
+            //    {
+            //        await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(new DiscordEmbedBuilder()
+            //        {
+            //            Title = "An error occurred.",
+            //            Color = DiscordColor.Red,
+            //            Description = "Something went wrong when trying to send message to the Log channel. Discord channel not found!"
+            //        }));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(new DiscordEmbedBuilder()
+            //        {
+            //            Title = "An error occurred.",
+            //            Color = DiscordColor.Red,
+            //            Description = $"Something went wrong when trying to send message to the Log channel.\n\nThis was Discord's response:\n> {ex.Message}\n. Please try again or contact the developer."
+            //        }));
+            //    }
+            //}
+            #endregion
 
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
             {
+                Title = "Complete.",
                 Color = DiscordColor.Green,
                 Description = $"The panel was successfully created and sent to the {panelChannel.Mention}."
             }));
+
+            if (!await Database.CheckStaffs())
+            {
+                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(new DiscordEmbedBuilder()
+                {
+                    Title = "Warning.",
+                    Color = DiscordColor.Yellow,
+                    Description = "You have no staff. To add an staff, use the ``/addstaff`` command."
+                }));
+            }
         }
     }
 }
